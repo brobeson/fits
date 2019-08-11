@@ -1,0 +1,6 @@
+[build_requires]
+Catch2/2.7.2@catchorg/stable
+gsl_microsoft/2.0.0@bincrafters/stable
+
+[generators]
+cmake_find_package
