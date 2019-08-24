@@ -1,17 +1,17 @@
 if(CMAKE_CXX_COMPILER_ID STREQUAL GNU)
-  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8.3)
+  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 7.1)
     message(FATAL_ERROR
       "GCC version ${CMAKE_CXX_COMPILER_VERSION} is not supported. The minimum"
       " officially supported version of GCC is 8.3."
     )
   endif()
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL Clang)
-  #if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 7.1)
+  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 7.0)
     message(FATAL_ERROR
       "Clang version ${CMAKE_CXX_COMPILER_VERSION} is not supported. The"
       " minimum officially supported version of Clang is 7.1."
     )
-  #endif()
+  endif()
 else()
   # TODO Add support for MSVC. See https://github.com/brobeson/ess/issues/15
   message(FATAL_ERROR
@@ -23,10 +23,8 @@ endif()
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set(
     compiler_options
-    -fdiagnostics-show-template-tree
     -pedantic-errors
     -Walloca
-    -Wcast-align=strict
     -Wcast-qual
     -Wconversion
     -Wdate-time
@@ -34,7 +32,6 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     -Wduplicated-cond
     -Weffc++
     -Werror
-    -Wextra-semi
     -Wfloat-equal
     -Wformat=2
     -Winvalid-pch
@@ -63,9 +60,17 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     -Wzero-as-null-pointer-constant
     -Wall
     -Wextra
-    "$<$<CONFIG:Debug>:-fstack-protector-strong -Wstack-protector>"
+    "$<$<CONFIG:Debug>:-fstack-protector-strong>"
+    "$<$<CONFIG:Debug>:-Wstack-protector>"
     "$<$<CONFIG:Debug>:-ggdb>"
   )
+  if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 8.0)
+    list(APPEND compiler_options
+      -fdiagnostics-show-template-tree
+      -Wcast-align=strict
+      -Wextra-semi
+    )
+  endif()
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   set(
     compiler_options
@@ -81,7 +86,8 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     -Wno-documentation-unknown-command
     -Wno-padded
     -Wno-weak-vtables
-    "$<$<CONFIG:Debug>:-fstack-protector-strong -Wstack-protector>"
+    "$<$<CONFIG:Debug>:-fstack-protector-strong>"
+    "$<$<CONFIG:Debug>:-Wstack-protector>"
     "$<$<CONFIG:Debug>:-ggdb>"
   )
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")

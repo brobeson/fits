@@ -3,6 +3,7 @@
 
 #include "errors.h"
 #include <complex>
+#include <cstddef>
 #include <variant>
 #include <vector>
 
@@ -38,11 +39,11 @@ namespace fits
      */
     template <typename T>
     header_datum(const std::string& key,
-                 const T& value,
+                 const T& val,
                  const std::string& comment = ""):
       m_key {key},
       m_comment {comment},
-      m_value {value}
+      m_value {val}
     {
       // clang-format off
       static_assert(std::is_same_v<T, int>

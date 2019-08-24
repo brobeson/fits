@@ -44,6 +44,10 @@ foreach(test IN LISTS tests)
       fits::fits
   )
   target_compile_definitions(${test} PRIVATE GSL_THROW_ON_CONTRACT_VIOLATION)
+  target_compile_options(${test}
+    PRIVATE
+      $<$<CXX_COMPILER_ID:Clang>:-stdlib=libc++>
+  )
   add_test(NAME ${test} COMMAND ${test})
 endforeach()
 set_tests_properties(${tests} PROPERTIES LABELS unit)

@@ -2,6 +2,13 @@
 # run as part of the normal build process.
 
 message(STATUS "Configuring clang-tidy.")
+if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8.0)
+  message(
+    WARNING
+      "clang-tidy segfaults if the compiler version is less than 8. So, it won't be available."
+  )
+  return()
+endif()
 find_program(
   clang_tidy
   clang-tidy
@@ -21,4 +28,5 @@ set(
   "${clang_tidy}"
   -fix
   -fix-errors
+  -extra-arg=-Wno-unknown-warning-option
 )

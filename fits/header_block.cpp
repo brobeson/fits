@@ -49,7 +49,8 @@ namespace fits
     fits::header_datum parse_header_datum(const raw_block& bytes)
     {
       const auto [key, i] = parse_header_key(bytes);
-      return fits::header_datum {key, 0};
+      static_cast<void>(i);
+      return fits::header_datum {key, 1};
     }
   }  // namespace
 

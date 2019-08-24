@@ -1,0 +1,149 @@
+# vim: nospell
+
+language: cpp
+dist: xenial
+
+matrix:
+  include:
+    - os: linux
+      name: GCC 7
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-xenial-8
+          packages:
+            - cppcheck
+            - g++-7
+            - clang-format-8
+            - clang-tidy-8
+            - valgrind
+      env:
+        - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
+    - os: linux
+      name: GCC 8
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-xenial-8
+          packages:
+            - cppcheck
+            - g++-8
+            - clang-format-8
+            - clang-tidy-8
+            - valgrind
+      env:
+        - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
+    - os: linux
+      name: Clang 7
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-xenial-7
+            - llvm-toolchain-xenial-8
+          packages:
+            - cppcheck
+            - clang-7
+            - clang-format-8
+            - clang-tidy-8
+            - libc++-7-dev
+            - valgrind
+      env:
+        - MATRIX_EVAL="CC=clang && CXX=clang++"
+    - os: linux
+      name: Clang 8
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-xenial-8
+          packages:
+            - cppcheck
+            - clang-8
+            - clang-format-8
+            - clang-tidy-8
+            - libc++-8-dev
+            - valgrind
+      env:
+        - MATRIX_EVAL="CC=clang && CXX=clang++"
+
+install:
+  - eval "${MATRIX_EVAL}"
+  - pip install --user ${USER} cmakelint lizard conan
+
+  # set up a build directory, because in-source builds are not allowed
+  - source_directory="${TRAVIS_BUILD_DIR}"
+  - build_directory="${TRAVIS_BUILD_DIR}/../build"
+  - mkdir "${build_directory}"
+
+before_script:
+  - conan profile new --detect default
+  - if [[ "${CXX}" = "clang++" ]];
+    then
+      conan profile update settings.compiler.libcxx=libc++ default;
+    else
+      conan profile update settings.compiler.libcxx=libstdc++11 default;
+    fi
+
+script:
+  - cd "${source_directory}"
+  - cppcheck
+    --quiet
+    --enable=warning
+    --enable=style
+    --enable=information
+    --error-exitcode=2
+    -j $(nproc)
+    .
+  - find . -name 'CMakeLists.txt' -exec cmakelint --spaces=2 {} \;
+  - find . -name '*.cmake' -exec cmakelint --spaces=2 {} \;
+  - lizard --CCN 10 --arguments 4 --length 100 --warnings_only --modified
+
+  # Ensure that there are no formatting issues.
+  - find . -name '*.h' -exec clang-format -i -style=file {} \;
+  - find . -name '*.cpp' -exec clang-format -i -style=file {} \;
+  - test -z $(git status --porcelain)
+
+  # release build & test
+  - cd "${build_directory}"
+    && conan install "${source_directory}"
+    && cmake
+      -Wdeprecated
+      -D CMAKE_BUILD_TYPE=Release
+      -D CMAKE_EXPORT_COMPILE_COMMANDS=on
+      -D quality_checks:BOOL=off
+      "${source_directory}"
+    && cmake --build . -- -j$(nproc)
+    && ctest --output-on-failure
+
+  # debug build & test with address sanitizer
+  - rm -r *
+    && conan install "${source_directory}"
+    && cmake
+      -Wdeprecated
+      -D CMAKE_BUILD_TYPE=Debug
+      -D quality_checks:BOOL=on
+      -D dynamic_analysis:STRING=asan
+      "${source_directory}"
+    && cmake --build . -- -j$(nproc)
+    && ctest --output-on-failure --label-regex unit
+
+  # debug build & test with Valgrind
+  - rm -r *
+    && conan install "${source_directory}"
+    && cmake
+      -Wdeprecated
+      -D CMAKE_BUILD_TYPE=Debug
+      -D quality_checks:BOOL=on
+      -D dynamic_analysis:STRING=valgrind
+      "${source_directory}"
+    && cmake --build . -- -j$(nproc)
+    && ctest 
+      --output-on-failure
+      --label-regex unit
+      --dashboard ExperimentalMemCheck
+    && find Testing/Temporary -size 0 -exec rm {} \;
+    && find Testing/Temporary -name 'MemoryChecker.*.log' -exec cat {} \;
+
