@@ -5,16 +5,9 @@
 set(
   dynamic_analysis
   "none"
-  CACHE
-  STRING
-  "The type of dynamic analysis to build into the project."
+  CACHE STRING "The type of dynamic analysis to build into the project."
 )
-set_property(
-  CACHE
-  dynamic_analysis
-  PROPERTY
-    STRINGS "none;asan;valgrind"
-)
+set_property(CACHE dynamic_analysis PROPERTY STRINGS "none;asan;valgrind")
 string(TOLOWER ${dynamic_analysis} analysis)
 get_property(strings CACHE dynamic_analysis PROPERTY STRINGS)
 if(NOT analysis IN_LIST strings)
@@ -23,30 +16,26 @@ else()
   set(
     dynamic_analysis
     ${analysis}
-    CACHE
-    STRING
-    "The type of dynamic analysis to build into the project."
+    CACHE STRING "The type of dynamic analysis to build into the project."
   )
 endif()
 
 find_package(Catch2 REQUIRED)
 
-set(tests
-  header_entry_test
-)
+set(tests header_entry_test)
+# cmake-format: off
 foreach(test IN LISTS tests)
+# cmake-format: on
   add_executable(${test} ${test}.cpp main.cpp)
   target_link_libraries(
     ${test}
     PRIVATE
-      $<$<STREQUAL:"${dynamic_analysis}","asan">:asan>
-      Catch2::Catch2
-      fits::fits
+      $<$<STREQUAL:"${dynamic_analysis}","asan">:asan> Catch2::Catch2 fits::fits
   )
   target_compile_definitions(${test} PRIVATE GSL_THROW_ON_CONTRACT_VIOLATION)
-  target_compile_options(${test}
-    PRIVATE
-      $<$<CXX_COMPILER_ID:Clang>:-stdlib=libc++>
+  target_compile_options(
+    ${test}
+    PRIVATE $<$<CXX_COMPILER_ID:Clang>:-stdlib=libc++>
   )
   add_test(NAME ${test} COMMAND ${test})
 endforeach()

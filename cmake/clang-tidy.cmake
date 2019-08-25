@@ -10,15 +10,13 @@ if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8.0)
   return()
 endif()
 find_program(
-  clang_tidy
-  clang-tidy
+  clang_tidy clang-tidy
   DOC "The path to the clang-tidy application."
 )
 mark_as_advanced(clang_tidy)
 if(NOT clang_tidy)
   message(
-    WARNING
-    "Clang-tidy was not found, so it will not be run with the build."
+    WARNING "Clang-tidy was not found, so it will not be run with the build."
   )
   return()
 endif()
