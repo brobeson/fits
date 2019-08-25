@@ -12,30 +12,23 @@ project(
   LANGUAGES CXX
 )
 
-option(quality_checks
-       "Disabling this disables quality checks such as clang-tidy and Cppcheck."
-       on)
-if(quality_checks)
-  include(cmake/clang-tidy.cmake)
-endif()
+include(cmake/clang-tidy.cmake)
 include(cmake/compiler.cmake)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 add_subdirectory(fits)
 
-if(quality_checks)
-  # Note, that the memory check variables must be set up before CTest is
-  # included. Thus, they are here and not in the unit_tests directory.
-  string(
-    CONCAT
-      MEMORYCHECK_COMMAND_OPTIONS
-      "--quiet"
-      " --gen-suppressions=all"
-      " --tool=memcheck"
-      " --leak-check=yes"
-      " --track-origins=yes"
-      " --error-exitcode=1"
-  )
-  include(CTest)
+string(
+  CONCAT
+    MEMORYCHECK_COMMAND_OPTIONS
+    "--quiet"
+    " --gen-suppressions=all"
+    " --tool=memcheck"
+    " --leak-check=yes"
+    " --track-origins=yes"
+    " --error-exitcode=1"
+)
+include(CTest)
+if(BUILD_TESTING)
   add_subdirectory(unit_tests)
   # add_subdirectory(compilation_tests)
 endif()

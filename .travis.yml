@@ -108,12 +108,7 @@ script:
   # release build & test
   - cd "${build_directory}"
     && conan install "${source_directory}"
-    && cmake
-      -Wdeprecated
-      -D CMAKE_BUILD_TYPE=Release
-      -D CMAKE_EXPORT_COMPILE_COMMANDS=on
-      -D quality_checks:BOOL=off
-      "${source_directory}"
+    && cmake -Wdeprecated -D CMAKE_BUILD_TYPE=Release "${source_directory}"
     && cmake --build . -- -j$(nproc)
     && ctest --output-on-failure
 
@@ -123,8 +118,7 @@ script:
     && cmake
       -Wdeprecated
       -D CMAKE_BUILD_TYPE=Debug
-      -D quality_checks:BOOL=on
-      -D dynamic_analysis:STRING=asan
+      -D fits_enable_asan:BOOL=on
       "${source_directory}"
     && cmake --build . -- -j$(nproc)
     && ctest --output-on-failure --label-regex unit
@@ -135,8 +129,7 @@ script:
     && cmake
       -Wdeprecated
       -D CMAKE_BUILD_TYPE=Debug
-      -D quality_checks:BOOL=on
-      -D dynamic_analysis:STRING=valgrind
+      -D fits_enable_asan:BOOL=off
       "${source_directory}"
     && cmake --build . -- -j$(nproc)
     && ctest 
