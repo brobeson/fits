@@ -9,7 +9,7 @@ foreach(test IN LISTS tests)
   add_executable(${test} ${test}.cpp main.cpp)
   target_link_libraries(
     ${test}
-    PRIVATE $<$<BOOL:"${fits_enable_asan}">:asan> Catch2::Catch2 fits::fits
+    PRIVATE $<$<BOOL:${fits_enable_asan}>:asan> Catch2::Catch2 fits::fits
   )
   target_compile_definitions(${test} PRIVATE GSL_THROW_ON_CONTRACT_VIOLATION)
   target_compile_options(
