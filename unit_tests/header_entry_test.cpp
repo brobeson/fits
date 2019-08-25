@@ -1,12 +1,12 @@
-#include "fits/header_block.h"
+#include "fits/header.h"
 #include <catch2/catch.hpp>
 
-fits::header_datum make_header(const std::string& key)
+fits::header_entry make_header(const std::string& key)
 {
-  return fits::header_datum {key, 0};
+  return fits::header_entry {key, 0};
 }
 
-SCENARIO("A header datum can be constructed.")
+SCENARIO("A header entry can be constructed.")
 {
   WHEN("The key is empty")
   {
@@ -31,12 +31,12 @@ SCENARIO("A header datum can be constructed.")
   }
 }
 
-SCENARIO("A header datum can be copied.")
+SCENARIO("A header entry can be copied.")
 {
-  GIVEN("A header datum")
+  GIVEN("A header entry")
   {
-    const fits::header_datum a {"KEY", 10, "a comment"};
-    WHEN("A new datum is constructed from the original.")
+    const fits::header_entry a {"KEY", 10, "a comment"};
+    WHEN("A new entry is constructed from the original.")
     {
       const auto b {a};  // NOLINT(performance-unnecessary-copy-initialization)
       THEN("The keys are the same") { CHECK(a.key() == b.key()); }
@@ -49,9 +49,9 @@ SCENARIO("A header datum can be copied.")
         CHECK(a.comment() == b.comment());
       }
     }
-    AND_WHEN("The original datum is assigned to another datum")
+    AND_WHEN("The original entry is assigned to another entry")
     {
-      fits::header_datum b {"YEK", 0};
+      fits::header_entry b {"YEK", 0};
       b = a;
       THEN("The keys are the same") { CHECK(a.key() == b.key()); }
       AND_THEN("The values are the same")
@@ -66,14 +66,14 @@ SCENARIO("A header datum can be copied.")
   }
 }
 
-SCENARIO("A header datum can be moved.")
+SCENARIO("A header entry can be moved.")
 {
-  GIVEN("A header datum")
+  GIVEN("A header entry")
   {
-    WHEN("A new datum is constructed from the original.")
+    WHEN("A new entry is constructed from the original.")
     {
       // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers)
-      fits::header_datum a {"KEY", 10, "a comment"};
+      fits::header_entry a {"KEY", 10, "a comment"};
       const auto b {std::move(a)};
       THEN("The new key is the same as the original")
       {
@@ -88,11 +88,11 @@ SCENARIO("A header datum can be moved.")
         CHECK(b.comment() == "a comment");
       }
     }
-    AND_WHEN("The original datum is assigned to another datum")
+    AND_WHEN("The original entry is assigned to another entry")
     {
       // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers)
-      fits::header_datum a {"KEY", 10, "a comment"};
-      fits::header_datum b {"YEK", 0};
+      fits::header_entry a {"KEY", 10, "a comment"};
+      fits::header_entry b {"YEK", 0};
       b = std::move(a);
       THEN("The new key is the same as the original")
       {

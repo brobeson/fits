@@ -32,7 +32,7 @@ endif()
 find_package(Catch2 REQUIRED)
 
 set(tests
-  header_datum_test
+  header_entry_test
 )
 foreach(test IN LISTS tests)
   add_executable(${test} ${test}.cpp main.cpp)

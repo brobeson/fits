@@ -17,7 +17,7 @@ namespace fits
     bool is_valid_header_key(const std::string& key);
   }
 
-  class header_datum
+  class header_entry
   {
   public:
     /**
@@ -38,7 +38,7 @@ namespace fits
      * restrictions noted above.
      */
     template <typename T>
-    header_datum(const std::string& key,
+    header_entry(const std::string& key,
                  const T& val,
                  const std::string& comment = ""):
       m_key {key},
@@ -81,7 +81,7 @@ namespace fits
     /**
      * \brief Get the datum's value.
      * \tparam T The data type of the returned value. See
-     * fits::header_datum::header_datum() for type restrictions.
+     * fits::header_entry::header_entry() for type restrictions.
      * \return The datum's value.
      * \throws Unknown Anything thrown by invalid access of a `std::variant` is
      * allowed to propagate.
@@ -116,7 +116,7 @@ namespace fits
    * \throws fits::invalid_header_block This is thrown if the block is not
    * exactly 2880 bytes.
    */
-  std::vector<header_datum> parse_header_block(const fits::raw_block& block);
+  std::vector<header_entry> parse_header_block(const fits::raw_block& block);
 
   class header_block
   {

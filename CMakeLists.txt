@@ -17,9 +17,9 @@ option(
   "Disabling this disables quality checks such as clang-tidy and Cppcheck."
   on
 )
-if(quality_checks)
-  include(cmake/clang-tidy.cmake)
-endif()
+#if(quality_checks)
+#  include(cmake/clang-tidy.cmake)
+#endif()
 include(cmake/compiler.cmake)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 add_subdirectory(fits)

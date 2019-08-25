@@ -1,6 +1,6 @@
 add_library(fits
-  header_block.cpp
-  header_block.h
+  header.cpp
+  header.h
 )
 add_library(fits::fits ALIAS fits)
 target_include_directories(fits PUBLIC "${CMAKE_SOURCE_DIR}")

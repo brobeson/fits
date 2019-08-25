@@ -1,4 +1,4 @@
-#include "fits/header_block.h"
+#include "fits/header.h"
 #include <algorithm>
 
 namespace fits
@@ -46,11 +46,11 @@ namespace fits
       return {key, i};
     }
 
-    fits::header_datum parse_header_datum(const raw_block& bytes)
+    fits::header_entry parse_header_entry(const raw_block& bytes)
     {
       const auto [key, i] = parse_header_key(bytes);
       static_cast<void>(i);
-      return fits::header_datum {key, 1};
+      return fits::header_entry {key, 1};
     }
   }  // namespace
 
@@ -65,11 +65,11 @@ namespace fits
     }
   }  // namespace details
 
-  std::string header_datum::key() const { return m_key; }
+  std::string header_entry::key() const { return m_key; }
 
-  std::string header_datum::comment() const { return m_comment; }
+  std::string header_entry::comment() const { return m_comment; }
 
-  std::vector<header_datum> parse_header_block(const fits::raw_block& block)
+  std::vector<header_entry> parse_header_block(const fits::raw_block& block)
   {
     FITS_EXPECTS(block.size() == 2880,
                  fits::invalid_header_block,
@@ -86,11 +86,11 @@ namespace fits
     // -    extract the comment
     // -    append the datum
     // -  return the list
-    std::vector<header_datum> data;
+    std::vector<header_entry> data;
     const auto entries {split(block)};
     for (auto i {entries.begin()}; i != entries.end() && !is_end(*i); ++i)
     {
-      data.emplace_back(parse_header_datum(*i));
+      data.emplace_back(parse_header_entry(*i));
     }
     return {};
   }
