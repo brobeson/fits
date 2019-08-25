@@ -1,22 +1,25 @@
 if(CMAKE_CXX_COMPILER_ID STREQUAL GNU)
   if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 7.1)
-    message(FATAL_ERROR
-      "GCC version ${CMAKE_CXX_COMPILER_VERSION} is not supported. The minimum"
-      " officially supported version of GCC is 8.3."
+    message(
+      FATAL_ERROR
+        "GCC version ${CMAKE_CXX_COMPILER_VERSION} is not supported. The minimum"
+        " officially supported version of GCC is 8.3."
     )
   endif()
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL Clang)
   if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 7.0)
-    message(FATAL_ERROR
-      "Clang version ${CMAKE_CXX_COMPILER_VERSION} is not supported. The"
-      " minimum officially supported version of Clang is 7.1."
+    message(
+      FATAL_ERROR
+        "Clang version ${CMAKE_CXX_COMPILER_VERSION} is not supported. The"
+        " minimum officially supported version of Clang is 7.1."
     )
   endif()
 else()
   # TODO Add support for MSVC. See https://github.com/brobeson/ess/issues/15
-  message(FATAL_ERROR
-    "${CMAKE_CXX_COMPILER_ID} is not supported. At this time, only GCC and"
-    " Clang are supported."
+  message(
+    FATAL_ERROR
+      "${CMAKE_CXX_COMPILER_ID} is not supported. At this time, only GCC and"
+      " Clang are supported."
   )
 endif()
 
@@ -65,10 +68,12 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     "$<$<CONFIG:Debug>:-ggdb>"
   )
   if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 8.0)
-    list(APPEND compiler_options
-      -fdiagnostics-show-template-tree
-      -Wcast-align=strict
-      -Wextra-semi
+    list(
+      APPEND
+        compiler_options
+        -fdiagnostics-show-template-tree
+        -Wcast-align=strict
+        -Wextra-semi
     )
   endif()
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
@@ -95,7 +100,7 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 else()
   message(
     WARNING
-    " Default compiler options are not enabled for your compiler.\n"
-    " Detected CMAKE_CXX_COMPILER_ID: ${CMAKE_CXX_COMPILER_ID}\n"
+      " Default compiler options are not enabled for your compiler.\n"
+      " Detected CMAKE_CXX_COMPILER_ID: ${CMAKE_CXX_COMPILER_ID}\n"
   )
 endif()

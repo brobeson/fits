@@ -71,7 +71,7 @@ matrix:
 
 install:
   - eval "${MATRIX_EVAL}"
-  - pip install --user ${USER} cmakelint lizard conan
+  - pip install --user ${USER} cmake-format lizard conan
 
   # set up a build directory, because in-source builds are not allowed
   - source_directory="${TRAVIS_BUILD_DIR}"
@@ -79,6 +79,7 @@ install:
   - mkdir "${build_directory}"
 
 before_script:
+  - shopt -s globstar
   - conan profile new --detect default
   - if [[ "${CXX}" = "clang++" ]];
     then
@@ -97,14 +98,12 @@ script:
     --error-exitcode=2
     -j $(nproc)
     .
-  - find . -name 'CMakeLists.txt' -exec cmakelint --spaces=2 {} \;
-  - find . -name '*.cmake' -exec cmakelint --spaces=2 {} \;
   - lizard --CCN 10 --arguments 4 --length 100 --warnings_only --modified
 
   # Ensure that there are no formatting issues.
-  - find . -name '*.h' -exec clang-format -i -style=file {} \;
-  - find . -name '*.cpp' -exec clang-format -i -style=file {} \;
-  - test -z $(git status --porcelain)
+  - cmake-format --in-place **/{CMakeLists.txt,*.cmake}
+  - clang-format -i -style=file **/*.{h,cpp}
+  - test -z "$(git status --porcelain)"
 
   # release build & test
   - cd "${build_directory}"
@@ -146,4 +145,3 @@ script:
       --dashboard ExperimentalMemCheck
     && find Testing/Temporary -size 0 -exec rm {} \;
     && find Testing/Temporary -name 'MemoryChecker.*.log' -exec cat {} \;
-
