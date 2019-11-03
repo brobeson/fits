@@ -3,9 +3,9 @@
 A modern, C++ library for reading and writing [Flexible Image Transport
 System](https://fits.gsfc.nasa.gov/).
 
-| | |
-|:--|:---:|
-| Linux | [![Build Status](https://travis-ci.com/brobeson/fits.svg?branch=master)](https://travis-ci.com/brobeson/fits) |
+| Linux |
+|:---:|
+| [![Build Status](https://travis-ci.com/brobeson/fits.svg?branch=master)](https://travis-ci.com/brobeson/fits) |
 
 This library has a few goals:
 
@@ -13,6 +13,7 @@ This library has a few goals:
 - Provide a C++ implementation that uses C++ best practices.
 - Provide an implementation that uses C++ through and through; an implementation
   that is not a wrapper around some other language implementation.
+- Provide an implementation that minimized dependencies on other libraries.
 
 [Build instructions](https://github.com/brobeson/fits/wiki/Building-Fits) can be
 found in the wiki.
