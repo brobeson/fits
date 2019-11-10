@@ -24,7 +24,5 @@ endif()
 set(
   CMAKE_CXX_CLANG_TIDY
   "${clang_tidy}"
-  -fix
-  -fix-errors
   -extra-arg=-Wno-unknown-warning-option
 )
