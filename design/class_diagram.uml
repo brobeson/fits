@@ -1,0 +1,76 @@
+@startuml@
+
+hide empty members
+skinparam linetype ortho
+
+package std <<frame>> {
+  class invalid_argument
+}
+
+package fits <<frame>> {
+  class header_entry {
+    - m_key : string
+    - m_value : variant[0..1]
+    - m_comment: string[0..1]
+    __ Member Functions __
+    + <<constructor>>(key : string)
+    + <<constructor>>(key : string, value : T)
+    + <<constructor>>(key : string, value : T, comment : string)
+    + <<assignment>>(source : header_entry)
+    + swap(other : header_entry)
+    ..
+    + key() : string
+    ..
+    + has_a_value() : boolean
+    + value() : T
+    + set_value(value : T)
+    + operator=(value : T)
+    ..
+    + has_a_comment() : boolean
+    + comment() : boolean
+    + set_comment(comment : string)
+    __ Non-member Functions __
+    <<comparison>>(a : header_entry, b : header_entry) : boolean
+    swap(a : header_entry, b : header_entry)
+    ..
+    to_bytes(entry : header_entry) : byte[80]
+    extract_header_entry(bytes : byte[80])
+  }
+
+  package detail <<frame>> {
+    class invalid_string {
+      + m_key : string
+      + m_bad_character_index : integer
+    }
+  }
+
+  class invalid_key <<Exception>> {
+    - m_bad_string : invalid_string
+    ____
+    + <<constructor>>(bad_string : invalid_string, message : string)
+    + what() : string
+    + key() : string
+    + bad_character() : character
+    + bad_character_index() : integer
+  }
+
+  class invalid_comment <<Exception>> {
+    - m_bad_string : invalid_string
+    ____
+    + <<constructor>>(bad_string : invalid_string, message : string)
+    + what() : string
+    + comment() : string
+    + bad_character() : character
+    + bad_character_index() : integer
+  }
+}
+
+invalid_key --|> invalid_argument
+invalid_key *-- "1" invalid_string
+header_entry --> "1" invalid_key : may throw >
+
+invalid_comment --|> invalid_argument
+invalid_comment *-- "1" invalid_string
+header_entry --> "1" invalid_comment : may throw >
+
+@enduml@
