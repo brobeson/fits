@@ -109,19 +109,3 @@ SCENARIO("A header entry can be moved.")
     }
   }
 }
-
-SCENARIO("Header data can be parse from a list of bytes.")
-{
-  GIVEN("An empty list of bytes.")
-  {
-    const fits::raw_block empty;
-    WHEN("The list is parsed.")
-    {
-      THEN("An exception is thrown.")
-      {
-        CHECK_THROWS_AS(fits::parse_header_block(empty),
-                        fits::invalid_header_block);
-      }
-    }
-  }
-}

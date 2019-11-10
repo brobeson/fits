@@ -9,9 +9,6 @@
 
 namespace fits
 {
-  /// A list of bytes, representing a FITS block.
-  using raw_block = std::vector<std::byte>;
-
   namespace details
   {
     bool is_valid_header_key(const std::string& key);
@@ -20,6 +17,10 @@ namespace fits
   class header_entry
   {
   public:
+    explicit header_entry(const std::string& key);
+    // explicit header_entry(const std::string& key, const std::string&
+    // comment);
+
     /**
      * \brief Construct a header datum.
      * \tparam T The type of the value. This is restricted to `int`, `float`,
@@ -52,15 +53,17 @@ namespace fits
           || std::is_same_v<T, std::string>
           || std::is_same_v<T, bool>);
       // clang-format on
-      FITS_EXPECTS(
-        !key.empty(), fits::invalid_key, "Header key may not be empty.");
-      FITS_EXPECTS(key.size() <= 8,
-                   fits::invalid_key,
-                   "Header key may not exceed 8 characters.");
-      FITS_EXPECTS(details::is_valid_header_key(key),
-                   fits::invalid_key,
-                   "Header key may not contain invalid ASCII characters.");
+      // FITS_EXPECTS(
+      //  !key.empty(), fits::invalid_key, "Header key may not be empty.");
+      // FITS_EXPECTS(key.size() <= 8,
+      //             fits::invalid_key,
+      //             "Header key may not exceed 8 characters.");
+      // FITS_EXPECTS(details::is_valid_header_key(key),
+      //             fits::invalid_key,
+      //             "Header key may not contain invalid ASCII characters.");
     }
+
+    void swap(header_entry& other) noexcept;
 
     /**
      * \brief Get the datum's key.
@@ -70,13 +73,25 @@ namespace fits
      */
     std::string key() const;
 
-    /**
-     * \brief Get the datum's comment.
-     * \return The comment.
-     * \throws Unknown Anything thrown by copying a `std::string` is allowed to
-     * propagate.
-     */
-    std::string comment() const;
+    bool has_a_value() const noexcept;
+
+    template <typename T>
+    void set_value(const T& new_value)
+    {
+    }
+
+    template <typename T>
+    fits::header_entry& operator=(const T& new_value)
+    {
+      // GCC 8.3 appears to have a bug, in which -Weffc++ warns that this
+      // operator should return a reference to *this, even though it is.
+#if __GNUC__ == 8
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Weffc++"
+      return *this;
+#  pragma GCC diagnostic pop
+#endif
+    }
 
     /**
      * \brief Get the datum's value.
@@ -99,6 +114,17 @@ namespace fits
       return std::get<T>(m_value);
     }
 
+    bool has_a_comment() const noexcept;
+    void set_comment(const std::string& new_comment);
+
+    /**
+     * \brief Get the datum's comment.
+     * \return The comment.
+     * \throws Unknown Anything thrown by copying a `std::string` is allowed to
+     * propagate.
+     */
+    std::string comment() const;
+
   private:
     std::string m_key;
     std::string m_comment;
@@ -106,21 +132,20 @@ namespace fits
       0};
   };
 
-  /**
-   * \brief Extract header information from a FITS block.
-   * \param[in] block A list of bytes, representing a FITS block. The block must
-   * be exactly 2880 bytes.
-   * \return A list of header datum objects, extracted from the \a block. Note
-   * that superfluous data is thrown away. This includes all bytes after the END
-   * keyword, extraneous spaces, etc.
-   * \throws fits::invalid_header_block This is thrown if the block is not
-   * exactly 2880 bytes.
-   */
-  std::vector<header_entry> parse_header_block(const fits::raw_block& block);
+  bool operator==(const fits::header_entry& a,
+                  const fits::header_entry& b) noexcept;
+  bool operator!=(const fits::header_entry& a,
+                  const fits::header_entry& b) noexcept;
+  bool operator<(const fits::header_entry& a,
+                 const fits::header_entry& b) noexcept;
+  bool operator<=(const fits::header_entry& a,
+                  const fits::header_entry& b) noexcept;
+  bool operator>(const fits::header_entry& a,
+                 const fits::header_entry& b) noexcept;
+  bool operator>=(const fits::header_entry& a,
+                  const fits::header_entry& b) noexcept;
 
-  class header_block
-  {
-  };
+  void swap(fits::header_entry& a, fits::header_entry& b) noexcept;
 }  // namespace fits
 
 #endif
