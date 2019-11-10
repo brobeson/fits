@@ -1,5 +1,4 @@
-add_library(fits header.cpp header.h)
-#add_library(fits errors.cpp errors.h header.cpp header.h)
+add_library(fits errors.cpp errors.h header.cpp header.h)
 add_library(fits::fits ALIAS fits)
 target_include_directories(fits PUBLIC "${CMAKE_SOURCE_DIR}")
 target_compile_features(fits PUBLIC cxx_std_17)

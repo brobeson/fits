@@ -5,26 +5,39 @@
 
 namespace fits
 {
-  struct invalid_key: public std::logic_error
+  namespace detail
   {
-    explicit invalid_key(const char* const message): std::logic_error {message}
+    struct invalid_string
     {
-    }
+      std::string m_string;
+      std::string::size_type m_bad_character_index;
+    };
+  }  // namespace detail
+
+  class invalid_key: public std::invalid_argument
+  {
+  public:
+    invalid_key(fits::detail::invalid_string bad_string,
+                const std::string& what_message);
+    std::string key() const;
+    std::string::value_type bad_character() const noexcept;
+    std::string::size_type bad_character_index() const noexcept;
+
+  private:
+    fits::detail::invalid_string m_bad_string {"", std::string::npos};
   };
 
-  struct invalid_header_block: public std::logic_error
+  class invalid_comment: public std::invalid_argument
   {
-    explicit invalid_header_block(const char* const message):
-      std::logic_error {message}
-    {
-    }
-  };
+  public:
+    invalid_comment(fits::detail::invalid_string bad_string,
+                    const std::string& what_message);
+    std::string comment() const;
+    std::string::value_type bad_character() const noexcept;
+    std::string::size_type bad_character_index() const noexcept;
 
-  struct parse_error: public std::logic_error
-  {
-    explicit parse_error(const char* const message): std::logic_error {message}
-    {
-    }
+  private:
+    fits::detail::invalid_string m_bad_string {"", std::string::npos};
   };
 }  // namespace fits
 
