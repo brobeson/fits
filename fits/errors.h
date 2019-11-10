@@ -10,7 +10,7 @@ namespace fits
     struct invalid_string
     {
       std::string m_string;
-      std::string::size_type m_bad_character_index;
+      std::string::size_type m_bad_character_index {std::string::npos};
     };
   }  // namespace detail
 

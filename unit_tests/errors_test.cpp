@@ -1,6 +1,8 @@
 #include "fits/errors.h"
 #include <catch2/catch.hpp>
 
+using namespace std::literals::string_literals;
+
 SCENARIO("An invalid_key exception can be constructed.")
 {
   GIVEN("An empty key string and no bad character index")
@@ -19,7 +21,7 @@ SCENARIO("An invalid_key exception can be constructed.")
       }
       AND_THEN("The what message is the one sent to the constructor.")
       {
-        CHECK(i.what() == "the key cannot be empty");
+        CHECK(i.what() == "the key cannot be empty"s);
       }
     }
   }
@@ -40,7 +42,7 @@ SCENARIO("An invalid_key exception can be constructed.")
       }
       AND_THEN("The what message is the one sent to the constructor.")
       {
-        CHECK(i.what() == "the key cannot be empty");
+        CHECK(i.what() == "the key cannot be empty"s);
       }
     }
   }
@@ -51,7 +53,7 @@ SCENARIO("An invalid_key exception can be constructed.")
     {
       fits::invalid_key i {{"Key", 1},
                            "the key cannot contain lower case characters"};
-      THEN("The key is correct.") { CHECK(i.key() == "key"); }
+      THEN("The key is correct.") { CHECK(i.key() == "Key"); }
       AND_THEN("The bad character is the character pointed to by the index.")
       {
         CHECK(i.bad_character() == 'e');
@@ -62,7 +64,7 @@ SCENARIO("An invalid_key exception can be constructed.")
       }
       AND_THEN("The what message is the one sent to the constructor.")
       {
-        CHECK(i.what() == "the key cannot contain lower case characters");
+        CHECK(i.what() == "the key cannot contain lower case characters"s);
       }
     }
   }
@@ -73,7 +75,7 @@ SCENARIO("An invalid_key exception can be constructed.")
     {
       fits::invalid_key i {{"Key", 4},
                            "the key cannot contain lower case characters"};
-      THEN("The key is correct.") { CHECK(i.key() == "key"); }
+      THEN("The key is correct.") { CHECK(i.key() == "Key"); }
       AND_THEN("The bad character is the null terminator.")
       {
         CHECK(i.bad_character() == '\0');
@@ -84,7 +86,7 @@ SCENARIO("An invalid_key exception can be constructed.")
       }
       AND_THEN("The what message is the one sent to the constructor.")
       {
-        CHECK(i.what() == "the key cannot contain lower case characters");
+        CHECK(i.what() == "the key cannot contain lower case characters"s);
       }
     }
   }
@@ -108,7 +110,7 @@ SCENARIO("An invalid_comment exception can be constructed.")
       }
       AND_THEN("The what message is the one sent to the constructor.")
       {
-        CHECK(i.what() == "the comment cannot be empty");
+        CHECK(i.what() == "the comment cannot be empty"s);
       }
     }
   }
@@ -129,7 +131,7 @@ SCENARIO("An invalid_comment exception can be constructed.")
       }
       AND_THEN("The what message is the one sent to the constructor.")
       {
-        CHECK(i.what() == "the comment cannot be empty");
+        CHECK(i.what() == "the comment cannot be empty"s);
       }
     }
   }
@@ -139,11 +141,11 @@ SCENARIO("An invalid_comment exception can be constructed.")
     WHEN("An invalid_comment exception is constructed")
     {
       fits::invalid_comment i {
-        {"Key", 1}, "the comment cannot contain lower case characters"};
+        {"comment", 1}, "the comment cannot contain lower case characters"};
       THEN("The comment is correct.") { CHECK(i.comment() == "comment"); }
       AND_THEN("The bad character is the character pointed to by the index.")
       {
-        CHECK(i.bad_character() == 'e');
+        CHECK(i.bad_character() == 'o');
       }
       AND_THEN("The bad character index is correct.")
       {
@@ -151,7 +153,7 @@ SCENARIO("An invalid_comment exception can be constructed.")
       }
       AND_THEN("The what message is the one sent to the constructor.")
       {
-        CHECK(i.what() == "the comment cannot contain lower case characters");
+        CHECK(i.what() == "the comment cannot contain lower case characters"s);
       }
     }
   }
@@ -161,7 +163,9 @@ SCENARIO("An invalid_comment exception can be constructed.")
     WHEN("An invalid_comment exception is constructed")
     {
       fits::invalid_comment i {
-        {"Key", 4}, "the comment cannot contain lower case characters"};
+        // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers)
+        {"comment", 20},
+        "the comment cannot contain lower case characters"};
       THEN("The comment is correct.") { CHECK(i.comment() == "comment"); }
       AND_THEN("The bad character is the null terminator.")
       {
@@ -173,7 +177,7 @@ SCENARIO("An invalid_comment exception can be constructed.")
       }
       AND_THEN("The what message is the one sent to the constructor.")
       {
-        CHECK(i.what() == "the comment cannot contain lower case characters");
+        CHECK(i.what() == "the comment cannot contain lower case characters"s);
       }
     }
   }

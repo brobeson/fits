@@ -7,6 +7,10 @@ namespace fits
     std::invalid_argument {what_message},
     m_bad_string {std::move(bad_string)}
   {
+    if (m_bad_string.m_string.length() <= m_bad_string.m_bad_character_index)
+    {
+      m_bad_string.m_bad_character_index = std::string::npos;
+    }
   }
 
   std::string invalid_key::key() const { return m_bad_string.m_string; }
@@ -30,6 +34,10 @@ namespace fits
     std::invalid_argument {what_message},
     m_bad_string {std::move(bad_string)}
   {
+    if (m_bad_string.m_string.length() <= m_bad_string.m_bad_character_index)
+    {
+      m_bad_string.m_bad_character_index = std::string::npos;
+    }
   }
 
   std::string invalid_comment::comment() const { return m_bad_string.m_string; }
