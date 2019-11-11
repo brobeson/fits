@@ -2,7 +2,7 @@ option(fits_enable_asan "Enable or disable building with Address Sanitizer."
        off)
 find_package(Catch2 REQUIRED)
 
-set(tests errors_test header_entry_test)
+set(tests errors_test keyword_record_test)
 # cmake-format: off
 foreach(test IN LISTS tests)
 # cmake-format: on
