@@ -6,7 +6,7 @@ set(tests errors_test header_entry_test)
 # cmake-format: off
 foreach(test IN LISTS tests)
 # cmake-format: on
-  add_executable(${test} ${test}.cpp main.cpp)
+  add_executable(${test} ${test}.cpp fits_testing.h fits_testing.cpp main.cpp)
   target_link_libraries(
     ${test}
     PRIVATE $<$<BOOL:${fits_enable_asan}>:asan> Catch2::Catch2 fits::fits

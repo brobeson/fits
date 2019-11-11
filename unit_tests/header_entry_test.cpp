@@ -1,9 +1,30 @@
 #include "fits/header.h"
+#include "fits_testing.h"
 #include <catch2/catch.hpp>
+
+using namespace std::literals::string_literals;
 
 fits::header_entry make_header(const std::string& key)
 {
   return fits::header_entry {key, 0};
+}
+
+SCENARIO("A header key can be validated.")
+{
+  GIVEN("An empty key")
+  {
+    WHEN("the key is validated")
+    {
+      THEN("A correct exception is thrown.")
+      {
+        CHECK_THROWS_MATCHES(
+          fits::detail::validate_header_key(""),
+          fits::invalid_key,
+          fits_testing::match_exception<fits::invalid_key>(
+            {{"", std::string::npos}, "FITS header keys may not be empty."s}));
+      }
+    }
+  }
 }
 
 SCENARIO("A header entry can be constructed.")
