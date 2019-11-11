@@ -9,6 +9,13 @@
 
 namespace fits
 {
+  namespace detail
+  {
+    inline void validate_header_key(const std::string& /*key*/)
+    {
+      throw fits::invalid_key {{""}, "thrown exception"};
+    }
+  }  // namespace detail
   namespace details
   {
     bool is_valid_header_key(const std::string& key);
