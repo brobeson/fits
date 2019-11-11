@@ -16,6 +16,6 @@ foreach(test IN LISTS tests)
     ${test}
     PRIVATE $<$<CXX_COMPILER_ID:Clang>:-stdlib=libc++>
   )
-  add_test(NAME ${test} COMMAND ${test})
+  add_test(NAME ${test} COMMAND ${test} --use-colour=yes)
 endforeach()
 set_tests_properties(${tests} PROPERTIES LABELS unit)
