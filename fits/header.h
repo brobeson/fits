@@ -21,12 +21,23 @@ namespace fits
     bool is_valid_header_key(const std::string& key);
   }
 
-  class header_entry
+  class keyword_record
   {
   public:
-    explicit header_entry(const std::string& key);
-    // explicit header_entry(const std::string& key, const std::string&
-    // comment);
+    explicit keyword_record(const std::string& key): m_key {key} {}
+    keyword_record(const std::string& key, const std::string& comment):
+      m_key {key},
+      m_comment {comment}
+    {
+    }
+    keyword_record(const std::string& key,
+                   const std::string& comment,
+                   const int val):
+      m_key {key},
+      m_comment {comment},
+      m_value {val}
+    {
+    }
 
     /**
      * \brief Construct a header datum.
@@ -45,32 +56,32 @@ namespace fits
      * \throws fits::invalid_key This is thrown if \a key violates any of the
      * restrictions noted above.
      */
-    template <typename T>
-    header_entry(const std::string& key,
-                 const T& val,
-                 const std::string& comment = ""):
-      m_key {key},
-      m_comment {comment},
-      m_value {val}
-    {
-      // clang-format off
-      static_assert(std::is_same_v<T, int>
-          || std::is_same_v<T, float>
-          || std::is_same_v<T, std::complex<float>>
-          || std::is_same_v<T, std::string>
-          || std::is_same_v<T, bool>);
-      // clang-format on
-      // FITS_EXPECTS(
-      //  !key.empty(), fits::invalid_key, "Header key may not be empty.");
-      // FITS_EXPECTS(key.size() <= 8,
-      //             fits::invalid_key,
-      //             "Header key may not exceed 8 characters.");
-      // FITS_EXPECTS(details::is_valid_header_key(key),
-      //             fits::invalid_key,
-      //             "Header key may not contain invalid ASCII characters.");
-    }
+    // template <typename T>
+    // keyword_record(const std::string& key,
+    //               const T& val,
+    //               const std::string& comment = ""):
+    //  m_key {key},
+    //  m_comment {comment},
+    //  m_value {val}
+    //{
+    //  // clang-format off
+    //  static_assert(std::is_same_v<T, int>
+    //      || std::is_same_v<T, float>
+    //      || std::is_same_v<T, std::complex<float>>
+    //      || std::is_same_v<T, std::string>
+    //      || std::is_same_v<T, bool>);
+    //  // clang-format on
+    //  // FITS_EXPECTS(
+    //  //  !key.empty(), fits::invalid_key, "Header key may not be empty.");
+    //  // FITS_EXPECTS(key.size() <= 8,
+    //  //             fits::invalid_key,
+    //  //             "Header key may not exceed 8 characters.");
+    //  // FITS_EXPECTS(details::is_valid_header_key(key),
+    //  //             fits::invalid_key,
+    //  //             "Header key may not contain invalid ASCII characters.");
+    //}
 
-    void swap(header_entry& other) noexcept;
+    // void swap(keyword_record& other) noexcept;
 
     /**
      * \brief Get the datum's key.
@@ -80,49 +91,49 @@ namespace fits
      */
     std::string key() const;
 
-    bool has_a_value() const noexcept;
+    // bool has_a_value() const noexcept;
 
-    template <typename T>
-    void set_value(const T& new_value)
-    {
-    }
+    // template <typename T>
+    // void set_value(const T& new_value)
+    //{
+    //}
 
-    template <typename T>
-    fits::header_entry& operator=(const T& new_value)
-    {
-      // GCC 8.3 appears to have a bug, in which -Weffc++ warns that this
-      // operator should return a reference to *this, even though it is.
-#if __GNUC__ == 8
-#  pragma GCC diagnostic push
-#  pragma GCC diagnostic ignored "-Weffc++"
-      return *this;
-#  pragma GCC diagnostic pop
-#endif
-    }
+    //    template <typename T>
+    //    fits::keyword_record& operator=(const T& new_value)
+    //    {
+    //      // GCC 8.3 appears to have a bug, in which -Weffc++ warns that this
+    //      // operator should return a reference to *this, even though it is.
+    //#if __GNUC__ == 8
+    //#  pragma GCC diagnostic push
+    //#  pragma GCC diagnostic ignored "-Weffc++"
+    //      return *this;
+    //#  pragma GCC diagnostic pop
+    //#endif
+    //    }
 
     /**
      * \brief Get the datum's value.
      * \tparam T The data type of the returned value. See
-     * fits::header_entry::header_entry() for type restrictions.
+     * fits::keyword_record::keyword_record() for type restrictions.
      * \return The datum's value.
      * \throws Unknown Anything thrown by invalid access of a `std::variant` is
      * allowed to propagate.
      */
-    template <typename T>
-    T value() const
-    {
-      // clang-format off
-      static_assert(std::is_same_v<T, int>
-          || std::is_same_v<T, float>
-          || std::is_same_v<T, std::complex<float>>
-          || std::is_same_v<T, std::string>
-          || std::is_same_v<T, bool>);
-      // clang-format on
-      return std::get<T>(m_value);
-    }
+    // template <typename T>
+    // T value() const
+    //{
+    //  // clang-format off
+    //  static_assert(std::is_same_v<T, int>
+    //      || std::is_same_v<T, float>
+    //      || std::is_same_v<T, std::complex<float>>
+    //      || std::is_same_v<T, std::string>
+    //      || std::is_same_v<T, bool>);
+    //  // clang-format on
+    //  return std::get<T>(m_value);
+    //}
 
-    bool has_a_comment() const noexcept;
-    void set_comment(const std::string& new_comment);
+    // bool has_a_comment() const noexcept;
+    // void set_comment(const std::string& new_comment);
 
     /**
      * \brief Get the datum's comment.
@@ -134,25 +145,25 @@ namespace fits
 
   private:
     std::string m_key;
-    std::string m_comment;
+    std::string m_comment {""};
     std::variant<int, float, std::complex<float>, std::string, bool> m_value {
       0};
   };
 
-  bool operator==(const fits::header_entry& a,
-                  const fits::header_entry& b) noexcept;
-  bool operator!=(const fits::header_entry& a,
-                  const fits::header_entry& b) noexcept;
-  bool operator<(const fits::header_entry& a,
-                 const fits::header_entry& b) noexcept;
-  bool operator<=(const fits::header_entry& a,
-                  const fits::header_entry& b) noexcept;
-  bool operator>(const fits::header_entry& a,
-                 const fits::header_entry& b) noexcept;
-  bool operator>=(const fits::header_entry& a,
-                  const fits::header_entry& b) noexcept;
+  // bool operator==(const fits::keyword_record& a,
+  //                const fits::keyword_record& b) noexcept
+  // bool operator!=(const fits::keyword_record& a,
+  //                const fits::keyword_record& b) noexcept;
+  // bool operator<(const fits::keyword_record& a,
+  //               const fits::keyword_record& b) noexcept;
+  // bool operator<=(const fits::keyword_record& a,
+  //                const fits::keyword_record& b) noexcept;
+  // bool operator>(const fits::keyword_record& a,
+  //               const fits::keyword_record& b) noexcept;
+  // bool operator>=(const fits::keyword_record& a,
+  //                const fits::keyword_record& b) noexcept;
 
-  void swap(fits::header_entry& a, fits::header_entry& b) noexcept;
+  // void swap(fits::keyword_record& a, fits::keyword_record& b) noexcept;
 }  // namespace fits
 
 #endif
