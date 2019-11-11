@@ -29,5 +29,11 @@ standard, version 4.0](https://fits.gsfc.nasa.gov/standard40/fits_standard40aa-l
 | | Status | Requirement |
 |:---:|:---|:---|
 | :angry: | Not Started | An encoded value shall be preceded by `= ` (one equal sign, and one space). |
-| :angry: | Not Started | A value shall be one of the following types: string,
-boolean, integer number, real number, complex integer number, complex real number.
+| :angry: | Not Started | A value shall be one of the following types: string, boolean, integer number, real number, complex integer number, complex real number. |
+
+#### Comments
+
+| | Status | Requirement |
+|:---:|:---|:---|
+| :angry: | Not Started | A comment which follows a value shall be preceded by a `/` character. |
+| :angry: | Not Started | A comment shall contain only ASCII characters 32 - 126 (decimal). |
