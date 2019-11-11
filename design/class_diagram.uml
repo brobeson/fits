@@ -8,7 +8,7 @@ package std <<frame>> {
 }
 
 package fits <<frame>> {
-  class header_entry {
+  class keyword_record {
     - m_key : string
     - m_value : variant[0..1]
     - m_comment: string[0..1]
@@ -16,8 +16,8 @@ package fits <<frame>> {
     + <<constructor>>(key : string)
     + <<constructor>>(key : string, value : T)
     + <<constructor>>(key : string, value : T, comment : string)
-    + <<assignment>>(source : header_entry)
-    + swap(other : header_entry)
+    + <<assignment>>(source : keyword_record)
+    + swap(other : keyword_record)
     ..
     + key() : string
     ..
@@ -30,11 +30,11 @@ package fits <<frame>> {
     + comment() : boolean
     + set_comment(comment : string)
     __ Non-member Functions __
-    <<comparison>>(a : header_entry, b : header_entry) : boolean
-    swap(a : header_entry, b : header_entry)
+    <<comparison>>(a : keyword_record, b : keyword_record) : boolean
+    swap(a : keyword_record, b : keyword_record)
     ..
-    to_bytes(entry : header_entry) : byte[80]
-    extract_header_entry(bytes : byte[80])
+    to_bytes(entry : keyword_record) : byte[80]
+    extract_keyword_record(bytes : byte[80])
   }
 
   package detail <<frame>> {
@@ -67,10 +67,10 @@ package fits <<frame>> {
 
 invalid_key --|> invalid_argument
 invalid_key *-- "1" invalid_string
-header_entry --> "1" invalid_key : may throw >
+keyword_record --> "1" invalid_key : may throw >
 
 invalid_comment --|> invalid_argument
 invalid_comment *-- "1" invalid_string
-header_entry --> "1" invalid_comment : may throw >
+keyword_record --> "1" invalid_comment : may throw >
 
 @enduml@
