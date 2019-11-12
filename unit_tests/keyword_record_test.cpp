@@ -18,56 +18,34 @@ namespace fits_testing
 
 SCENARIO("Invalid data can be used to try to construct a keyword record.")
 {
-  GIVEN("An empty key")
+  struct test_case
   {
-    WHEN("A keyword record is constructed with just the key")
-    {
-      THEN("The constructor throws.")
-      {
-        CHECK_THROWS_MATCHES(
-          fits::keyword_record {""},
-          fits::invalid_key,
-          fits_testing::match_exception<fits::invalid_key>(
-            {{""s, std::string::npos}, "FITS header keys may not be empty."s}));
-      }
-    }
-    AND_WHEN("A keyword record is constructed with the key and a comment")
-    {
-      THEN("The constructor throws.")
-      {
-        CHECK_THROWS_MATCHES(
-          fits_testing::make_record(""s, "a comment"s),
-          fits::invalid_key,
-          fits_testing::match_exception<fits::invalid_key>(
-            {{""s, std::string::npos}, "FITS header keys may not be empty."s}));
-      }
-    }
-    AND_WHEN(
-      "A keyword record is constructed with the key, a value, and a comment")
-    {
-      THEN("The constructor throws.")
-      {
-        CHECK_THROWS_MATCHES(
-          fits_testing::make_record(""s, "a comment"s, 0),
-          fits::invalid_key,
-          fits_testing::match_exception<fits::invalid_key>(
-            {{""s, std::string::npos}, "FITS header keys may not be empty."s}));
-      }
-    }
-  }
+    std::string given_label;
+    std::string key;
+    std::string comment;
+    int value;
+    fits::invalid_key exception;
+  };
 
-  GIVEN("A key that is too long")
+  // clang-format off
+  // NOLINTNEXTLINE(google-build-using-namespace)
+  const auto c{GENERATE(values({
+    test_case{"An empty key"s, ""s, "a comment"s, 0, {{"", std::string::npos}, "FITS header keys may not be empty."s}},
+    test_case{"A key that is too long"s, "THIS_KEY_IS_TOO_LONG"s, "a comment"s, 0, {{"THIS_KEY_IS_TOO_LONG", 8}, "FITS header keys may not exceed eight characters."s}},
+    test_case{"A key with a lower case character"s, "Key"s, "a comment"s, 0, {{"Key"s, 1}, "FITS header key has an invalid character."s}},
+    test_case{"A key with a space"s, "KEY "s, "a comment"s, 0, {{"KEY "s, 3}, "FITS header key has an invalid character."s}},
+    test_case{"A key with a period"s, "Key."s, "a comment"s, 0, {{"KEY."s, 3}, "FITS header key has an invalid character."s}}}))};
+  // clang-format on
+  GIVEN(c.given_label)
   {
-    const std::string key {"THIS_KEY_IS_TOO_LONG"};
     WHEN("A keyword record is constructed with just the key")
     {
       THEN("The constructor throws.")
       {
         CHECK_THROWS_MATCHES(
-          fits::keyword_record {key},
+          fits::keyword_record {c.key},
           fits::invalid_key,
-          fits_testing::match_exception<fits::invalid_key>(
-            {{key, 8}, "FITS header keys may not exceed eight characters."s}));
+          fits_testing::match_exception<fits::invalid_key>(c.exception));
       }
     }
     AND_WHEN("A keyword record is constructed with the key and a comment")
@@ -75,10 +53,9 @@ SCENARIO("Invalid data can be used to try to construct a keyword record.")
       THEN("The constructor throws.")
       {
         CHECK_THROWS_MATCHES(
-          fits_testing::make_record(key, "a comment"s),
+          fits_testing::make_record(c.key, c.comment),
           fits::invalid_key,
-          fits_testing::match_exception<fits::invalid_key>(
-            {{key, 8}, "FITS header keys may not exceed eight characters."s}));
+          fits_testing::match_exception<fits::invalid_key>(c.exception));
       }
     }
     AND_WHEN(
@@ -87,53 +64,139 @@ SCENARIO("Invalid data can be used to try to construct a keyword record.")
       THEN("The constructor throws.")
       {
         CHECK_THROWS_MATCHES(
-          fits_testing::make_record(key, "a comment"s, 0),
+          fits_testing::make_record(c.key, c.comment, c.value),
           fits::invalid_key,
-          fits_testing::match_exception<fits::invalid_key>(
-            {{key, 8}, "FITS header keys may not exceed eight characters."s}));
-      }
-    }
-  }
-
-  GIVEN("A key with lower case characters")
-  {
-    const std::string key {"Key"};
-    WHEN("A keyword record is constructed with just the key")
-    {
-      THEN("The constructor throws.")
-      {
-        CHECK_THROWS_MATCHES(
-          fits::keyword_record {key},
-          fits::invalid_key,
-          fits_testing::match_exception<fits::invalid_key>(
-            {{key, 1}, "FITS header key has an invalid character."s}));
-      }
-    }
-    AND_WHEN("A keyword record is constructed with the key and a comment")
-    {
-      THEN("The constructor throws.")
-      {
-        CHECK_THROWS_MATCHES(
-          fits_testing::make_record(key, "a comment"s),
-          fits::invalid_key,
-          fits_testing::match_exception<fits::invalid_key>(
-            {{key, 1}, "FITS header key has an invalid character."s}));
-      }
-    }
-    AND_WHEN(
-      "A keyword record is constructed with the key, a value, and a comment")
-    {
-      THEN("The constructor throws.")
-      {
-        CHECK_THROWS_MATCHES(
-          fits_testing::make_record(key, "a comment"s, 0),
-          fits::invalid_key,
-          fits_testing::match_exception<fits::invalid_key>(
-            {{key, 1}, "FITS header key has an invalid character."s}));
+          fits_testing::match_exception<fits::invalid_key>(c.exception));
       }
     }
   }
 }
+
+// SCENARIO("Invalid data can be used to try to construct a keyword record.")
+//{
+/*
+GIVEN("An empty key")
+{
+  WHEN("A keyword record is constructed with just the key")
+  {
+    THEN("The constructor throws.")
+    {
+      CHECK_THROWS_MATCHES(
+        fits::keyword_record {""},
+        fits::invalid_key,
+        fits_testing::match_exception<fits::invalid_key>(
+          {{""s, std::string::npos}, "FITS header keys may not be empty."s}));
+    }
+  }
+  AND_WHEN("A keyword record is constructed with the key and a comment")
+  {
+    THEN("The constructor throws.")
+    {
+      CHECK_THROWS_MATCHES(
+        fits_testing::make_record(""s, "a comment"s),
+        fits::invalid_key,
+        fits_testing::match_exception<fits::invalid_key>(
+          {{""s, std::string::npos}, "FITS header keys may not be empty."s}));
+    }
+  }
+  AND_WHEN(
+    "A keyword record is constructed with the key, a value, and a comment")
+  {
+    THEN("The constructor throws.")
+    {
+      CHECK_THROWS_MATCHES(
+        fits_testing::make_record(""s, "a comment"s, 0),
+        fits::invalid_key,
+        fits_testing::match_exception<fits::invalid_key>(
+          {{""s, std::string::npos}, "FITS header keys may not be empty."s}));
+    }
+  }
+}
+
+GIVEN("A key that is too long")
+{
+  const std::string key {"THIS_KEY_IS_TOO_LONG"};
+  WHEN("A keyword record is constructed with just the key")
+  {
+    THEN("The constructor throws.")
+    {
+      CHECK_THROWS_MATCHES(
+        fits::keyword_record {key},
+        fits::invalid_key,
+        fits_testing::match_exception<fits::invalid_key>(
+          {{key, 8}, "FITS header keys may not exceed eight characters."s}));
+    }
+  }
+  AND_WHEN("A keyword record is constructed with the key and a comment")
+  {
+    THEN("The constructor throws.")
+    {
+      CHECK_THROWS_MATCHES(
+        fits_testing::make_record(key, "a comment"s),
+        fits::invalid_key,
+        fits_testing::match_exception<fits::invalid_key>(
+          {{key, 8}, "FITS header keys may not exceed eight characters."s}));
+    }
+  }
+  AND_WHEN(
+    "A keyword record is constructed with the key, a value, and a comment")
+  {
+    THEN("The constructor throws.")
+    {
+      CHECK_THROWS_MATCHES(
+        fits_testing::make_record(key, "a comment"s, 0),
+        fits::invalid_key,
+        fits_testing::match_exception<fits::invalid_key>(
+          {{key, 8}, "FITS header keys may not exceed eight characters."s}));
+    }
+  }
+}
+*/
+
+/*
+  GIVEN("A key with lower case characters")
+  {
+    // The GENERATE() macro (from Catch2) must have 'using namespace ...'. I
+    // can't do anything about that, so tell clang-tidy to ignore it.
+    // NOLINTNEXTLINE(google-build-using-namespace)
+    const auto key {GENERATE("Key"s, "K y"s, "K.y"s)};
+    WHEN("A keyword record is constructed with just the key")
+    {
+      THEN("The constructor throws.")
+      {
+        CHECK_THROWS_MATCHES(
+          fits::keyword_record {key},
+          fits::invalid_key,
+          fits_testing::match_exception<fits::invalid_key>(
+            {{key, 1}, "FITS header key has an invalid character."s}));
+      }
+    }
+    AND_WHEN("A keyword record is constructed with the key and a comment")
+    {
+      THEN("The constructor throws.")
+      {
+        CHECK_THROWS_MATCHES(
+          fits_testing::make_record(key, "a comment"s),
+          fits::invalid_key,
+          fits_testing::match_exception<fits::invalid_key>(
+            {{key, 1}, "FITS header key has an invalid character."s}));
+      }
+    }
+    AND_WHEN(
+      "A keyword record is constructed with the key, a value, and a comment")
+    {
+      THEN("The constructor throws.")
+      {
+        CHECK_THROWS_MATCHES(
+          fits_testing::make_record(key, "a comment"s, 0),
+          fits::invalid_key,
+          fits_testing::match_exception<fits::invalid_key>(
+            {{key, 1}, "FITS header key has an invalid character."s}));
+      }
+    }
+  }
+  */
+//}
 
 // SCENARIO("A keyword record can be copied.")
 //{
