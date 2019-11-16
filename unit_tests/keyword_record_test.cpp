@@ -36,6 +36,7 @@ SCENARIO("Invalid data can be used to try to construct a keyword record.")
     test_case{"A key with a space"s, "KEY "s, "a comment"s, 0, {{"KEY "s, 3}, "FITS header key has an invalid character."s}},
     test_case{"A key with a period"s, "Key."s, "a comment"s, 0, {{"KEY."s, 3}, "FITS header key has an invalid character."s}}}))};
   // clang-format on
+
   GIVEN(c.given_label)
   {
     WHEN("A keyword record is constructed with just the key")
@@ -72,208 +73,43 @@ SCENARIO("Invalid data can be used to try to construct a keyword record.")
   }
 }
 
-// SCENARIO("Invalid data can be used to try to construct a keyword record.")
-//{
-/*
-GIVEN("An empty key")
+SCENARIO("A keyword record can be copied.")
 {
-  WHEN("A keyword record is constructed with just the key")
+  GIVEN("A keyword record")
   {
-    THEN("The constructor throws.")
+    const fits::keyword_record ground_truth {"KEY", "a comment", 10};
+    WHEN("A new keyword record is constructed from the original.")
     {
-      CHECK_THROWS_MATCHES(
-        fits::keyword_record {""},
-        fits::invalid_key,
-        fits_testing::match_exception<fits::invalid_key>(
-          {{""s, std::string::npos}, "FITS header keys may not be empty."s}));
+      // NOLINTNEXTLINE(performance-unnecessary-copy-initialization)
+      const auto copied {ground_truth};
+      THEN("The records are the same") { CHECK(ground_truth == copied); }
     }
-  }
-  AND_WHEN("A keyword record is constructed with the key and a comment")
-  {
-    THEN("The constructor throws.")
+    AND_WHEN("The original entry is assigned to another entry")
     {
-      CHECK_THROWS_MATCHES(
-        fits_testing::make_record(""s, "a comment"s),
-        fits::invalid_key,
-        fits_testing::match_exception<fits::invalid_key>(
-          {{""s, std::string::npos}, "FITS header keys may not be empty."s}));
-    }
-  }
-  AND_WHEN(
-    "A keyword record is constructed with the key, a value, and a comment")
-  {
-    THEN("The constructor throws.")
-    {
-      CHECK_THROWS_MATCHES(
-        fits_testing::make_record(""s, "a comment"s, 0),
-        fits::invalid_key,
-        fits_testing::match_exception<fits::invalid_key>(
-          {{""s, std::string::npos}, "FITS header keys may not be empty."s}));
+      fits::keyword_record copied {"YEK", "not a comment", 0};
+      copied = ground_truth;
+      THEN("The records are the same") { CHECK(ground_truth == copied); }
     }
   }
 }
 
-GIVEN("A key that is too long")
+SCENARIO("A keyword record can be moved.")
 {
-  const std::string key {"THIS_KEY_IS_TOO_LONG"};
-  WHEN("A keyword record is constructed with just the key")
+  GIVEN("A keyword record")
   {
-    THEN("The constructor throws.")
+    const fits::keyword_record ground_truth {"KEY", "a comment", 10};
+    auto movable_copy {ground_truth};
+    WHEN("A new keyword record is constructed from the original.")
     {
-      CHECK_THROWS_MATCHES(
-        fits::keyword_record {key},
-        fits::invalid_key,
-        fits_testing::match_exception<fits::invalid_key>(
-          {{key, 8}, "FITS header keys may not exceed eight characters."s}));
+      const auto moved {std::move(movable_copy)};
+      THEN("The records are the same") { CHECK(ground_truth == moved); }
     }
-  }
-  AND_WHEN("A keyword record is constructed with the key and a comment")
-  {
-    THEN("The constructor throws.")
+    AND_WHEN("The original entry is assigned to another entry")
     {
-      CHECK_THROWS_MATCHES(
-        fits_testing::make_record(key, "a comment"s),
-        fits::invalid_key,
-        fits_testing::match_exception<fits::invalid_key>(
-          {{key, 8}, "FITS header keys may not exceed eight characters."s}));
-    }
-  }
-  AND_WHEN(
-    "A keyword record is constructed with the key, a value, and a comment")
-  {
-    THEN("The constructor throws.")
-    {
-      CHECK_THROWS_MATCHES(
-        fits_testing::make_record(key, "a comment"s, 0),
-        fits::invalid_key,
-        fits_testing::match_exception<fits::invalid_key>(
-          {{key, 8}, "FITS header keys may not exceed eight characters."s}));
+      movable_copy = ground_truth;
+      fits::keyword_record moved {"YEK", "not a comment", 0};
+      moved = std::move(movable_copy);
+      THEN("The records are the same") { CHECK(ground_truth == moved); }
     }
   }
 }
-*/
-
-/*
-  GIVEN("A key with lower case characters")
-  {
-    // The GENERATE() macro (from Catch2) must have 'using namespace ...'. I
-    // can't do anything about that, so tell clang-tidy to ignore it.
-    // NOLINTNEXTLINE(google-build-using-namespace)
-    const auto key {GENERATE("Key"s, "K y"s, "K.y"s)};
-    WHEN("A keyword record is constructed with just the key")
-    {
-      THEN("The constructor throws.")
-      {
-        CHECK_THROWS_MATCHES(
-          fits::keyword_record {key},
-          fits::invalid_key,
-          fits_testing::match_exception<fits::invalid_key>(
-            {{key, 1}, "FITS header key has an invalid character."s}));
-      }
-    }
-    AND_WHEN("A keyword record is constructed with the key and a comment")
-    {
-      THEN("The constructor throws.")
-      {
-        CHECK_THROWS_MATCHES(
-          fits_testing::make_record(key, "a comment"s),
-          fits::invalid_key,
-          fits_testing::match_exception<fits::invalid_key>(
-            {{key, 1}, "FITS header key has an invalid character."s}));
-      }
-    }
-    AND_WHEN(
-      "A keyword record is constructed with the key, a value, and a comment")
-    {
-      THEN("The constructor throws.")
-      {
-        CHECK_THROWS_MATCHES(
-          fits_testing::make_record(key, "a comment"s, 0),
-          fits::invalid_key,
-          fits_testing::match_exception<fits::invalid_key>(
-            {{key, 1}, "FITS header key has an invalid character."s}));
-      }
-    }
-  }
-  */
-//}
-
-// SCENARIO("A keyword record can be copied.")
-//{
-//  GIVEN("A keyword record")
-//  {
-//    const fits::keyword_record a {"KEY", 10, "a comment"};
-//    WHEN("A new entry is constructed from the original.")
-//    {
-//      const auto b {a};  //
-//      NOLINT(performance-unnecessary-copy-initialization) THEN("The keys are
-//      the same") { CHECK(a.key() == b.key()); } AND_THEN("The values are the
-//      same")
-//      {
-//        CHECK(a.value<int>() == b.value<int>());
-//      }
-//      AND_THEN("The comments are the same")
-//      {
-//        CHECK(a.comment() == b.comment());
-//      }
-//    }
-//    AND_WHEN("The original entry is assigned to another entry")
-//    {
-//      fits::keyword_record b {"YEK", 0};
-//      b = a;
-//      THEN("The keys are the same") { CHECK(a.key() == b.key()); }
-//      AND_THEN("The values are the same")
-//      {
-//        CHECK(a.value<int>() == b.value<int>());
-//      }
-//      AND_THEN("The comments are the same")
-//      {
-//        CHECK(a.comment() == b.comment());
-//      }
-//    }
-//  }
-//}
-
-// SCENARIO("A keyword record can be moved.")
-//{
-//  GIVEN("A keyword record")
-//  {
-//    WHEN("A new entry is constructed from the original.")
-//    {
-//      // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers)
-//      fits::keyword_record a {"KEY", 10, "a comment"};
-//      const auto b {std::move(a)};
-//      THEN("The new key is the same as the original")
-//      {
-//        CHECK(b.key() == "KEY");
-//      }
-//      AND_THEN("The new value is the same as the original")
-//      {
-//        CHECK(b.value<int>() == 10);
-//      }
-//      AND_THEN("The new comment is the same as the original")
-//      {
-//        CHECK(b.comment() == "a comment");
-//      }
-//    }
-//    AND_WHEN("The original entry is assigned to another entry")
-//    {
-//      // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers)
-//      fits::keyword_record a {"KEY", 10, "a comment"};
-//      fits::keyword_record b {"YEK", 0};
-//      b = std::move(a);
-//      THEN("The new key is the same as the original")
-//      {
-//        CHECK(b.key() == "KEY");
-//      }
-//      AND_THEN("The new value is the same as the original")
-//      {
-//        CHECK(b.value<int>() == 10);
-//      }
-//      AND_THEN("The new comment is the same as the original")
-//      {
-//        CHECK(b.comment() == "a comment");
-//      }
-//    }
-//  }
-//}

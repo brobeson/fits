@@ -150,20 +150,20 @@ namespace fits
       0};
   };
 
-  // bool operator==(const fits::keyword_record& a,
-  //                const fits::keyword_record& b) noexcept
-  // bool operator!=(const fits::keyword_record& a,
-  //                const fits::keyword_record& b) noexcept;
-  // bool operator<(const fits::keyword_record& a,
-  //               const fits::keyword_record& b) noexcept;
-  // bool operator<=(const fits::keyword_record& a,
-  //                const fits::keyword_record& b) noexcept;
-  // bool operator>(const fits::keyword_record& a,
-  //               const fits::keyword_record& b) noexcept;
-  // bool operator>=(const fits::keyword_record& a,
-  //                const fits::keyword_record& b) noexcept;
+  bool operator==(const fits::keyword_record& a,
+                  const fits::keyword_record& b) noexcept;
+  bool operator!=(const fits::keyword_record& a,
+                  const fits::keyword_record& b) noexcept;
+  bool operator<(const fits::keyword_record& a,
+                 const fits::keyword_record& b) noexcept;
+  bool operator<=(const fits::keyword_record& a,
+                  const fits::keyword_record& b) noexcept;
+  bool operator>(const fits::keyword_record& a,
+                 const fits::keyword_record& b) noexcept;
+  bool operator>=(const fits::keyword_record& a,
+                  const fits::keyword_record& b) noexcept;
 
-  // void swap(fits::keyword_record& a, fits::keyword_record& b) noexcept;
+  void swap(fits::keyword_record& a, fits::keyword_record& b) noexcept;
 }  // namespace fits
 
 #endif
