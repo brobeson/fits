@@ -12,6 +12,11 @@ namespace fits_testing
 
   std::string to_string(const fits::invalid_key& exception);
 
+  bool operator==(const fits::invalid_comment& a,
+                  const fits::invalid_comment& b) noexcept;
+
+  std::string to_string(const fits::invalid_comment& exception);
+
   template <typename Exception>
   class exception_matcher: public Catch::MatcherBase<Exception>
   {

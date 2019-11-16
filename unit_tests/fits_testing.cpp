@@ -22,4 +22,23 @@ namespace fits_testing
       .append(exception.what())
       .append(1, '\'');
   }
+
+  bool operator==(const fits::invalid_comment& a,
+                  const fits::invalid_comment& b) noexcept
+  {
+    return a.comment() == b.comment() && a.bad_character() == b.bad_character()
+           && a.bad_character_index() == b.bad_character_index()
+           && a.what() == b.what();
+  }
+
+  std::string to_string(const fits::invalid_comment& exception)
+  {
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers)
+    return "comment: '"s.append(exception.comment())
+      .append("' bad index: '")
+      .append(std::to_string(exception.bad_character_index()))
+      .append("' what message: '")
+      .append(exception.what())
+      .append(1, '\'');
+  }
 }  // namespace fits_testing
