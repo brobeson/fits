@@ -1,18 +1,12 @@
-cmake_minimum_required(VERSION 3.12)
-
-if(CMAKE_BINARY_DIR MATCHES "${CMAKE_SOURCE_DIR}.*")
-  message(FATAL_ERROR "In source builds are not allowed.")
-endif()
+cmake_minimum_required(VERSION 3.13)
 
 project(
   fits
-  VERSION 0.0
   DESCRIPTION "A library for the FITS file type."
   HOMEPAGE_URL "https://github.com/brobeson/fits"
   LANGUAGES CXX
 )
 
-include(cmake/clang-tidy.cmake)
 include(cmake/compiler.cmake)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 add_subdirectory(fits)
