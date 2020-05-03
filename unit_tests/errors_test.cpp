@@ -1,6 +1,6 @@
 #define CATCH_CONFIG_MAIN
 #include "fits/errors.h"
-#include <catch2/catch.hpp>
+#include <catch.hpp>
 
 using namespace std::literals::string_literals;
 

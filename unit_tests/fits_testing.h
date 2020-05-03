@@ -2,7 +2,7 @@
 #define FITS_TESTING_H
 
 #include "fits/errors.h"
-#include <catch2/catch.hpp>
+#include <catch.hpp>
 #include <string>
 
 namespace fits_testing

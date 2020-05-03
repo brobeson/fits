@@ -1,7 +1,7 @@
 #define CATCH_CONFIG_MAIN
-#include "fits/header.h"
+#include "fits/header_block.h"
 #include "fits_testing.h"
-#include <catch2/catch.hpp>
+#include <catch.hpp>
 
 using namespace std::literals::string_literals;
 

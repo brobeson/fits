@@ -1,11 +1,10 @@
-#include "fits/errors.h"
+#include "errors.h"
 
 namespace fits
 {
   invalid_key::invalid_key(fits::detail::invalid_string bad_string,
                            const std::string& what_message):
-    std::invalid_argument {what_message},
-    m_bad_string {std::move(bad_string)}
+    std::invalid_argument {what_message}, m_bad_string {std::move(bad_string)}
   {
     if (m_bad_string.m_string.length() <= m_bad_string.m_bad_character_index)
     {
@@ -31,8 +30,7 @@ namespace fits
 
   invalid_comment::invalid_comment(fits::detail::invalid_string bad_string,
                                    const std::string& what_message):
-    std::invalid_argument {what_message},
-    m_bad_string {std::move(bad_string)}
+    std::invalid_argument {what_message}, m_bad_string {std::move(bad_string)}
   {
     if (m_bad_string.m_string.length() <= m_bad_string.m_bad_character_index)
     {
