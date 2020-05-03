@@ -71,7 +71,7 @@ matrix:
 
 install:
   - eval "${MATRIX_EVAL}"
-  - pip install --user ${USER} cmake-format lizard
+  - pip install --user ${USER} lizard
 
   # Set up a build directory, because in-source builds are not allowed.
   - source_directory="${TRAVIS_BUILD_DIR}"
@@ -94,7 +94,6 @@ script:
   - lizard --CCN 10 --arguments 4 --length 100 --warnings_only --modified
 
   # Ensure that there are no formatting issues.
-  - cmake-format --in-place **/{CMakeLists.txt,*.cmake}
   - clang-format -i -style=file **/*.{h,cpp}
   - test -z "$(git status --porcelain)"
 
