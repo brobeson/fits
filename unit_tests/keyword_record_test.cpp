@@ -1,3 +1,4 @@
+#define CATCH_CONFIG_MAIN
 #include "fits/header.h"
 #include "fits_testing.h"
 #include <catch2/catch.hpp>

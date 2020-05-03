@@ -71,22 +71,15 @@ matrix:
 
 install:
   - eval "${MATRIX_EVAL}"
-  - pip install --user ${USER} cmake-format lizard conan
+  - pip install --user ${USER} cmake-format lizard
 
-  # set up a build directory, because in-source builds are not allowed
+  # Set up a build directory, because in-source builds are not allowed.
   - source_directory="${TRAVIS_BUILD_DIR}"
   - build_directory="${TRAVIS_BUILD_DIR}/../build"
   - mkdir "${build_directory}"
 
 before_script:
   - shopt -s globstar
-  - conan profile new --detect default
-  - if [[ "${CXX}" = "clang++" ]];
-    then
-      conan profile update settings.compiler.libcxx=libc++ default;
-    else
-      conan profile update settings.compiler.libcxx=libstdc++11 default;
-    fi
 
 script:
   - cd "${source_directory}"
@@ -107,14 +100,12 @@ script:
 
   # release build & test
   - cd "${build_directory}"
-    && conan install "${source_directory}"
     && cmake -Wdeprecated -D CMAKE_BUILD_TYPE=Release "${source_directory}"
     && cmake --build . -- -j$(nproc)
     && ctest --output-on-failure
 
   # debug build & test with address sanitizer
   - rm -r *
-    && conan install "${source_directory}"
     && cmake
       -Wdeprecated
       -D CMAKE_BUILD_TYPE=Debug
@@ -125,7 +116,6 @@ script:
 
   # debug build & test with Valgrind
   - rm -r *
-    && conan install "${source_directory}"
     && cmake
       -Wdeprecated
       -D CMAKE_BUILD_TYPE=Debug

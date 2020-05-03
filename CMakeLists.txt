@@ -23,6 +23,7 @@ string(
 )
 include(CTest)
 if(BUILD_TESTING)
+  add_subdirectory(catch2)
   add_subdirectory(unit_tests)
   # add_subdirectory(compilation_tests)
 endif()
